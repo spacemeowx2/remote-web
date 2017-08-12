@@ -42,11 +42,11 @@ export default {
       wsServer: 'ws://192.168.199.152:3000/client',
       promptShow: true,
       deviceList: [{
-        id: 'a',
+        id: 'testDevice',
         name: '家'
       }],
       devices: {
-        a: {
+        testDevice: {
           sensorTypes: [{
             typeID: 1,
             typeName: '温度',
@@ -87,8 +87,8 @@ export default {
   },
   created () {
     this.subscriptor = new Subscriptor(this.wsServer)
-    this.subscriptor.subscribe('DeviceList', list => {
-      this.deviceList = list
+    this.subscriptor.subscribe('DeviceList', data => {
+      this.deviceList = data.data
     })
     this.nowInterval = setInterval(() => {
       this.now = getTime()

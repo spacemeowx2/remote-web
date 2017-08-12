@@ -32,6 +32,7 @@ export class Client extends ProtocolHandler {
     let aid = this.app.getDataSource(name).subscribe(...args, (data: any) => {
       this.send({
         type: 'Data',
+        id: id,
         value: data
       })
     })
@@ -51,6 +52,9 @@ export class Client extends ProtocolHandler {
   onClose (code: any, msg: any) {
     super.onClose(code, msg)
     this.app.removeClient(this)
+    for (let key of this.idMap.keys()) {
+      this.onUnsubscribe({id: key})
+    }
   }
   onError (err: Error) {
     super.onError(err)

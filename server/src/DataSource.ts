@@ -21,7 +21,6 @@ export class DataSource<T> {
     while (cur) {
       if (nodeSubscriber.has(cur)) {
         for (let s of nodeSubscriber.get(cur)) {
-          console.log('bbb', cur)
           s.callback(cur)
         }
       }
@@ -59,11 +58,13 @@ export class DataSource<T> {
   unsubscribe (id: number) {
     const item = this.subscriber.get(id)
     const args = item.args
-    this.walkNode(this.gotoNode(this.data, args), cur => {
-      const ary = this.nodeSubscriber.get(cur)
-      const idx = ary.indexOf(item)
-      ary.splice(idx, 1)
-    })
+
+    let cur = this.gotoNode(this.data, args)
+    const ary = this.nodeSubscriber.get(cur)
+    const idx = ary.indexOf(item)
+    ary.splice(idx, 1)
+    this.notify(cur)
+
     return this.subscriber.delete(id)
   }
   walkNode (cur: DataNode<T>, cb: (cur: DataNode<T>) => void) {
