@@ -60,10 +60,53 @@ class SensorType:
     def dumps(self):
         return json.dumps(self.s)
 
-sensorType = SensorType()
-sensorType.add('name0', 'unit0')
-sensorType.add('name1', 'unit1')
-sensorType.add('name2', 'unit2')
+class HandShake:
 
-print sensorType.array()
-print sensorType.dumps()
+    def __init__(self):
+        self.s = []
+    
+    def add(self, deviceId, deviceName, supportCommand, sensorType):
+        self.s.append({
+              'type': 'Handshake',
+              'deviceName': deviceName,
+              'supportCommand': supportCommand,
+              'sensorTypes': sensorType
+        })
+
+    def array(self):
+        return self.s
+    
+    def dumps(self):
+        return json.dumps(self.s)
+
+
+if __name__ == '__main__':
+
+    commands = Command()
+    commands.add('test0')
+    commands.add('test1')
+    commands.add('test2')
+
+    print type(commands.array())
+    print type(commands.dumps())
+
+    commandCatalog = CommandCatelog()
+    commandCatalog.add('test', commands.array())
+
+    print type(commandCatalog.array())
+    print type(commandCatalog.dumps())
+
+    sensorTypes = SensorType()
+    sensorTypes.add('name0', 'unit0')
+    sensorTypes.add('name1', 'unit1')
+    sensorTypes.add('name2', 'unit2')
+
+    print type(sensorTypes.array())
+    print type(sensorTypes.dumps())
+
+    handShake = HandShake()
+    handShake.add('deviceID', 'deviceName', commandCatalog.array(), sensorTypes.array())
+
+    print handShake.array()
+    print handShake.dumps()
+
