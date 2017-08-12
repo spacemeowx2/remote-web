@@ -5,7 +5,12 @@ export interface PHandshake extends Package {
   type: 'Handshake'
   deviceName: string
   supportCommand: CommandCatelog[]
-  sensorTypes: string[]
+  sensorTypes: SensorType[]
+}
+export interface SensorType {
+  typeID: number
+  typeName: string
+  unit: string
 }
 export interface CommandCatelog {
   typeID: number
