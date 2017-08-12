@@ -3,6 +3,7 @@ export interface Package {
 }
 export interface PHandshake extends Package {
   type: 'Handshake'
+  deviceId: string // 每个设备唯一
   deviceName: string
   supportCommand: CommandCatelog[]
   sensorTypes: SensorType[]
