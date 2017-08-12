@@ -1,8 +1,8 @@
 import * as Protocol from './Protocol'
 
 export interface IDevice {
-  name: string
-  devType: string
+  deviceName: string
+  deviceID: string
   supportCommand: Protocol.CommandCatelog[]
-  sensorTypes: string[]
+  sensorTypes: Protocol.SensorType[]
 }

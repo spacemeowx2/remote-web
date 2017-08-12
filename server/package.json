@@ -4,7 +4,9 @@
   "description": "111",
   "main": "index.js",
   "scripts": {
-    "dev": "tsc -w -p .",
+    "dev": "concurrently --kill-others \"npm run watch\" \"npm run mon\"",
+    "mon": "nodemon --delay 1 dist/app.js",
+    "watch": "tsc -w -p .",
     "start": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,6 +17,9 @@
   "author": "imspace",
   "license": "MIT",
   "devDependencies": {
+    "concurrently": "^3.5.0",
+    "nodemon": "^1.11.0",
+    "source-map-support": "^0.4.15",
     "tslint": "^5.6.0",
     "tslint-config-standard": "^6.0.1",
     "typescript": "^2.4.2"
