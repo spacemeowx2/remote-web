@@ -8,9 +8,14 @@ class SurppotCommand:
         self.nextID = 0
     
     def add(self, typeName, command):
-        self.commands
+        return self.commands
     
+    def dumps():
+        return 1
 
-package
+s = '{"TypeID":123}'
+z = json.loads(s)
+x = json.dumps(z)
 
-print json.loads(s)
+print z
+print x 
