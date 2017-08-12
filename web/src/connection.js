@@ -76,8 +76,19 @@ export class Subscriptor extends Connection {
     if (!item) {
       return false
     }
-    this.items.splice(this.items.indexOf(item), 1)
-    delete this.map[id]
+    try {
+      this.send({
+        type: 'Unsubscribe',
+        id
+      })
+      this.items.splice(this.items.indexOf(item), 1)
+      delete this.map[id]
+      return true
+    } catch (e) {
+      console.log('fail to subscribe, reconnect')
+      this.connect()
+      return false
+    }
   }
   subscribe (name, ...args) {
     const callback = args[args.length - 1]
