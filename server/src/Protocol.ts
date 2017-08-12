@@ -8,6 +8,9 @@ export interface PHandshake extends Package {
   supportCommand: CommandCatelog[]
   sensorTypes: SensorType[]
 }
+export interface PHeartbeat extends Package {
+  type: 'Heartbeat'
+}
 export interface SensorType {
   typeID: number
   typeName: string

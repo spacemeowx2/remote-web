@@ -16,7 +16,7 @@ export class Device {
   onMessage (data: Protocol.Package) {
     if (data.type === 'Handshake') {
       let pkg = data as Protocol.PHandshake
-      
+      //
     }
   }
 }
