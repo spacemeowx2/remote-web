@@ -28,6 +28,7 @@
 
 <script>
 import Device from './components/Device'
+import {Subscriptor} from './connection'
 function getTime () {
   return (new Date()).getTime()
 }
@@ -80,10 +81,12 @@ export default {
       },
       activeDeviceId: null,
       now: getTime(),
-      nowInterval: null
+      nowInterval: null,
+      subscriptor: null
     }
   },
   created () {
+    this.subscriptor = new Subscriptor(this.wsServer)
     this.nowInterval = setInterval(() => {
       this.now = getTime()
     }, 1000)

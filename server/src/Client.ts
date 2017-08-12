@@ -10,6 +10,11 @@ export class Client extends ProtocolHandler {
   static typeMap: Map<string, Function> = new Map()
   constructor (private app: App, ws: WebSocket) {
     super(ws)
+    this.send(this.app.getDeviceList().map(i => ({
+      type: 'DeviceList',
+      id: i.deviceID,
+      name: i.deviceName
+    })))
   }
   @Type('GetDevice')
   getDevice () {
