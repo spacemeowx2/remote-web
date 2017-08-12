@@ -12,7 +12,6 @@ def on_error(ws, error):
 def on_close(ws):
     print("### closed ###")
 
-
 def on_open(ws):
     def run(*args):
         array, dump = package.GenTestArrayAndDump()
@@ -23,8 +22,6 @@ def on_open(ws):
         ws.close()
         print("thread terminating...")
     thread.start_new_thread(run, ())
-
-
 
 if __name__ == "__main__":
     ws = websocket.WebSocketApp("ws://192.168.199.152:3000/repeat",
