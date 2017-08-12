@@ -40,14 +40,30 @@ class CommandCatelog:
     def dumps(self):
         return json.dumps(self.s)
 
-commands = Command()
-commands.add("test1")
-commands.add("test2")
-commands.add("test3")
+class SensorType:
+    
+    def __init__(self):
+        self.s = []
+        self.nextID = 0
+    
+    def add(self, typeName, unit):
+        self.s.append({
+            'typeID': self.nextID,
+            'typeName': typeName,
+            'unit': unit
+        })
+        self.nextID += 1
+    
+    def array(self):
+        return self.s
 
-print commands.dumps()
+    def dumps(self):
+        return json.dumps(self.s)
 
-commandCatelog = CommandCatelog()
-commandCatelog.add('test', commands.array())
+sensorType = SensorType()
+sensorType.add('name0', 'unit0')
+sensorType.add('name1', 'unit1')
+sensorType.add('name2', 'unit2')
 
-print commandCatelog.dumps()
+print sensorType.array()
+print sensorType.dumps()
