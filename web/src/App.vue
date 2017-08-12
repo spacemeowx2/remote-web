@@ -87,6 +87,9 @@ export default {
   },
   created () {
     this.subscriptor = new Subscriptor(this.wsServer)
+    this.subscriptor.subscribe('DeviceList', list => {
+      this.deviceList = list
+    })
     this.nowInterval = setInterval(() => {
       this.now = getTime()
     }, 1000)

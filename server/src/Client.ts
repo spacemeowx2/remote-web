@@ -5,23 +5,32 @@ import { App } from './app'
 import { Logger } from './Logger'
 const logger = new Logger('Client')
 const Type = ProtocolHandler.Type
-
+interface SubscribePackage {
+  id: number
+  args: any[]
+  name: string
+}
+interface SubscribeAllPackage {
+  items: SubscribePackage[]
+}
+interface UnsubscribePackage {
+  id: number
+}
 export class Client extends ProtocolHandler {
-  static typeMap: Map<string, Function> = new Map()
   constructor (private app: App, ws: WebSocket) {
     super(ws)
-    this.send(this.app.getDeviceList().map(i => ({
-      type: 'DeviceList',
-      id: i.deviceID,
-      name: i.deviceName
-    })))
   }
-  @Type('GetDevice')
-  getDevice () {
-    return {
-      type: 'DeviceList',
-      devices: this.app.getDeviceList()
-    }
+  @Type('SubscribeAll')
+  onSubscribeAll ({items}: SubscribeAllPackage) {
+    //
+  }
+  @Type('Subscribe')
+  onSubscribe ({id, args, name}: SubscribePackage) {
+    //
+  }
+  @Type('Unsubscribe')
+  onUnsubscribe ({id}: UnsubscribePackage) {
+    //
   }
   onClose (code: any, msg: any) {
     super.onClose(code, msg)

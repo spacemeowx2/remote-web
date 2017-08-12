@@ -7,6 +7,7 @@ import { IDevice } from './IDevice'
 import { TestDevice } from './TestDevice'
 import { Client } from './Client'
 import { Logger } from './Logger'
+import { DataSource } from './DataSource'
 const logger = new Logger('Server')
 Logger.enableAll()
 
@@ -25,11 +26,16 @@ export class App {
   private app = websockify(new Koa())
   private devices: IDevice[] = []
   private clients: Client[] = []
+  private dataSources: Map<string, DataSource<number>> = new Map()
   constructor () {
+    this.dataSources.set('sensor', new DataSource())
     this.devices.push(new TestDevice(this))
     this.initRouter()
     this.app.listen(3000)
     logger.log('Server start listening on port 3000')
+  }
+  getDataSource (name: string) {
+    return this.dataSources.get(name)
   }
   removeDevice (device: IDevice) {
     removeArray(this.devices, device)

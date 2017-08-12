@@ -1,6 +1,7 @@
 export class Connection {
   constructor (url) {
     this._url = url
+    this.connecting = false
     this.connect(this._url)
     this.listener = null
   }
@@ -14,10 +15,14 @@ export class Connection {
     }
   }
   connect () {
+    this.connecting = true
     this._close()
     this.ws = new WebSocket(this._url)
     this.ws.onclose = () => this.onClose()
-    this.ws.onerror = () => this.onClose()
+    this.ws.onerror = () => {
+      this.connecting = false
+      this.onClose()
+    }
     this.ws.onmessage = (msg) => {
       let data = msg.data
       try {
@@ -27,7 +32,10 @@ export class Connection {
       }
       this.onMessage(data)
     }
-    this.ws.onopen = () => this.onOpen()
+    this.ws.onopen = () => {
+      this.connecting = false
+      this.onOpen()
+    }
   }
   _close () {
     if (this.ws) {
@@ -36,6 +44,9 @@ export class Connection {
   }
   onClose () {
     setTimeout(() => {
+      if (this.connecting) {
+        return
+      }
       this.connect()
     }, 1000)
     if (this.listener) {
@@ -61,10 +72,12 @@ export class Subscriptor extends Connection {
     this.nextId = 1
   }
   onOpen () {
-    this.send({
-      type: 'SubscribeAll',
-      items: this.items
-    })
+    if (this.items.length > 0) {
+      this.send({
+        type: 'SubscribeAll',
+        items: this.items
+      })
+    }
   }
   onMessage (data) {
     if (data.type === 'Data') {
@@ -85,8 +98,7 @@ export class Subscriptor extends Connection {
       delete this.map[id]
       return true
     } catch (e) {
-      console.log('fail to subscribe, reconnect')
-      this.connect()
+      console.log('fail to unsubscribe')
       return false
     }
   }
@@ -107,8 +119,7 @@ export class Subscriptor extends Connection {
         args: item.args
       })
     } catch (e) {
-      console.log('fail to subscribe, reconnect')
-      this.connect()
+      console.log('fail to subscribe')
     }
     return item.id
   }
