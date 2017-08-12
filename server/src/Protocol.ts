@@ -23,8 +23,8 @@ export interface Command {
 }
 export interface PSensor extends Package {
   type: 'Sensor'
-  sensorType: string
-  sensorValue: number
+  typeId: number
+  Value: number
 }
 export interface PUserCommand extends Package {
   type: 'UserCommand'
