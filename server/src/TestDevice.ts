@@ -6,7 +6,7 @@ import { App } from './app'
 
 export class TestDevice extends Device {
   deviceName: string = 'TestDevice'
-  deviceId: string = 'testDevice'
+  deviceID: string = 'testDevice'
   supportCommand: Protocol.CommandCatelog[] = [{
     typeID: 1,
     typeName: '测试类别',
