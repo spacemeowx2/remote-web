@@ -22,25 +22,46 @@ function removeArray<T> (ary: T[], element: T) {
   }
 }
 
+class DeviceMap extends Map<string, IDevice> {
+  constructor (private app: App) {
+    super()
+  }
+  get (key: string) {
+    return super.get(key)
+  }
+  add (device: IDevice) {
+    this.set(device.deviceID, device)
+  }
+  set (key: string, value: IDevice) {
+    let ret = super.set(key, value)
+    this.app.onUpdateDevice()
+    this.app.getDataSource('DeviceDetail').publish(value, key)
+    return ret
+  }
+  delete (key: string) {
+    return super.delete(key)
+  }
+}
+
 export class App {
   private app = websockify(new Koa())
-  private devices: IDevice[] = []
-  private deviceList: DataSource<any[]> = new DataSource()
+  private devices: DeviceMap = new DeviceMap(this)
   private clients: Client[] = []
   private dataSources: Map<string, DataSource<any>> = new Map()
   constructor () {
     this.dataSources.set('sensor', new DataSource())
-    this.dataSources.set('DeviceList', this.deviceList)
+    this.dataSources.set('DeviceList', new DataSource())
+    this.dataSources.set('DeviceDetail', new DataSource())
 
-    this.devices.push(new TestDevice(this))
-    this.updateDeviceList()
+    this.devices.add(new TestDevice(this))
 
     this.initRouter()
     this.app.listen(3000)
     logger.log('Server start listening on port 3000')
   }
-  updateDeviceList () {
-    this.deviceList.publish(this.devices.map(i => ({
+  onUpdateDevice () {
+    let devices = Array.from(this.devices.values())
+    this.getDataSource('DeviceList').publish(devices.map(i => ({
       id: i.deviceID,
       name: i.deviceName
     })))
@@ -48,22 +69,14 @@ export class App {
   getDataSource (name: string) {
     return this.dataSources.get(name)
   }
-  removeDevice (device: IDevice) {
-    removeArray(this.devices, device)
-    this.updateDeviceList()
-  }
   removeClient (client: Client) {
     removeArray(this.clients, client)
-  }
-  getDeviceList () {
-    return this.devices.filter(i => i.deviceID)
   }
   initRouter () {
     const route = new Route()
     route.all('/device', async (ctx, next) => {
       logger.debug('New Device')
-      this.devices.push(new Device(this, ctx.websocket))
-      this.updateDeviceList()
+      this.devices.add(new Device(this, ctx.websocket))
     })
 
     route.all('/client', async (ctx, next) => {

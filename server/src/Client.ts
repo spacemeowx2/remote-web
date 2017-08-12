@@ -21,6 +21,10 @@ export class Client extends ProtocolHandler {
   constructor (private app: App, ws: WebSocket) {
     super(ws)
   }
+  @Type('GetDeviceDetail')
+  onGetDeviceDetail ({deviceId}: any) {
+    //
+  }
   @Type('SubscribeAll')
   onSubscribeAll ({items}: SubscribeAllPackage) {
     for (let item of items) {

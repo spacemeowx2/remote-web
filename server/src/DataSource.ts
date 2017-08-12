@@ -31,7 +31,6 @@ export class DataSource<T> {
     let cur = this.gotoNode(this.data, args)
     cur.data = value
     this.notify(cur)
-    // console.log(JSON.stringify(this.data, null, 2))
   }
   subscribe (...args: any[]) {
     if (args.length === 0) {
