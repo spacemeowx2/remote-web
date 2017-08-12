@@ -25,11 +25,16 @@ function removeArray<T> (ary: T[], element: T) {
 export class App {
   private app = websockify(new Koa())
   private devices: IDevice[] = []
+  private deviceList: DataSource<IDevice[]> = new DataSource()
   private clients: Client[] = []
-  private dataSources: Map<string, DataSource<number>> = new Map()
+  private dataSources: Map<string, DataSource<any>> = new Map()
   constructor () {
     this.dataSources.set('sensor', new DataSource())
+    this.dataSources.set('DeviceList', this.deviceList)
+
     this.devices.push(new TestDevice(this))
+    this.deviceList.publish(this.devices)
+
     this.initRouter()
     this.app.listen(3000)
     logger.log('Server start listening on port 3000')
@@ -39,6 +44,7 @@ export class App {
   }
   removeDevice (device: IDevice) {
     removeArray(this.devices, device)
+    this.deviceList.publish(this.devices)
   }
   removeClient (client: Client) {
     removeArray(this.clients, client)
@@ -51,6 +57,7 @@ export class App {
     route.all('/device', async (ctx, next) => {
       logger.debug('New Device')
       this.devices.push(new Device(this, ctx.websocket))
+      this.deviceList.publish(this.devices)
     })
 
     route.all('/client', async (ctx, next) => {

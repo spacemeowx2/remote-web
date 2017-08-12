@@ -21,6 +21,7 @@ export class DataSource<T> {
     while (cur) {
       if (nodeSubscriber.has(cur)) {
         for (let s of nodeSubscriber.get(cur)) {
+          console.log('bbb', cur)
           s.callback(cur)
         }
       }

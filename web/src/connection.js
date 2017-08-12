@@ -81,7 +81,7 @@ export class Subscriptor extends Connection {
   }
   onMessage (data) {
     if (data.type === 'Data') {
-      this.map[data.id].callback(...data.args)
+      this.map[data.id].callback(...data.value)
     }
   }
   unsubscribe (id) {

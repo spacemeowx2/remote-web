@@ -33,7 +33,7 @@ export class TestDevice extends Device {
     this.timer = setInterval(() => this.onInterval(), 1000)
   }
   onInterval () {
-    this.sensorSource.publish(25, this.deviceID, 1)
-    this.sensorSource.publish(60, this.deviceID, 2)
+    // this.sensorSource.publish(25, this.deviceID, 1)
+    // this.sensorSource.publish(60, this.deviceID, 2)
   }
 }
