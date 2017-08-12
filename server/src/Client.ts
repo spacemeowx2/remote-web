@@ -18,4 +18,12 @@ export class Client extends ProtocolHandler {
       devices: this.app.getDeviceList()
     }
   }
+  onClose (code: any, msg: any) {
+    super.onClose(code, msg)
+    this.app.removeClient(this)
+  }
+  onError (err: Error) {
+    super.onError(err)
+    this.app.removeClient(this)
+  }
 }

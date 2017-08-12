@@ -10,6 +10,17 @@ import { Logger } from './Logger'
 const logger = new Logger('Server')
 Logger.enableAll()
 
+function removeArray<T> (ary: T[], element: T) {
+  while (true) {
+    const i = ary.indexOf(element)
+    if (i === -1) {
+      return
+    } else {
+      ary.splice(i, 1)
+    }
+  }
+}
+
 export class App {
   private app = websockify(new Koa())
   private devices: IDevice[] = []
@@ -19,6 +30,12 @@ export class App {
     this.initRouter()
     this.app.listen(3000)
     logger.log('Server start listening on port 3000')
+  }
+  removeDevice (device: IDevice) {
+    removeArray(this.devices, device)
+  }
+  removeClient (client: Client) {
+    removeArray(this.clients, client)
   }
   getDeviceList () {
     return this.devices.filter(i => i.deviceID)

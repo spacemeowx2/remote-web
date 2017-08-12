@@ -43,4 +43,12 @@ export class Device extends ProtocolHandler implements IDevice {
     }))
     logger.debug('Handshake', JSON.stringify(this))
   }
+  onClose (code: any, msg: any) {
+    super.onClose(code, msg)
+    this.app.removeDevice(this)
+  }
+  onError (err: Error) {
+    super.onError(err)
+    this.app.removeDevice(this)
+  }
 }
