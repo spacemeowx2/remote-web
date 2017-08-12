@@ -59,24 +59,42 @@ class SensorType:
     def dumps(self):
         return json.dumps(self.s)
 
-class HandShake:
 
-    def __init__(self):
-        self.s = []
     
-    def add(self, deviceId, deviceName, supportCommand, sensorType):
-        self.s.append({
-              'type': 'Handshake',
-              'deviceName': deviceName,
-              'supportCommand': supportCommand,
-              'sensorTypes': sensorType
-        })
+def HandShackDumps(deviceId, deviceName, supportCommand, sensorType):
+    return json.dumps({
+            'type': 'Handshake',
+            'deviceID': deviceID
+            'deviceName': deviceName,
+            'supportCommand': supportCommand,
+            'sensorTypes': sensorType
+            })
 
-    def array(self):
-        return self.s
-    
-    def dumps(self):
-        return json.dumps(self.s)
+def HartbeatDUmp():
+    return json.dumps({'type': 'Heartbeat'})
+
+def SensorDump(typeID, Value):
+    return json.dumps({
+            'type': 'Sensor',
+            'TypeID': typeID,
+            'Value': Value
+            })
+
+def UserCommandDump(ID, typeID, cmdID):
+    return json.dupms({
+            'type': 'UserCommand',
+            'ID': ID,
+            'typeID': typeID,
+            'cmdID', cmdID
+            })
+
+def UserCmdResponseDump(ID, isSuccess, info):
+    return json.dumps({
+            'type': 'UserCommandResponse',
+            'ID': ID,
+            'success': isSuccess,
+            'info': info 
+            })
 
 def GenTestArrayAndDump():
 
@@ -93,10 +111,7 @@ def GenTestArrayAndDump():
     sensorTypes.add('name1', 'unit1')
     sensorTypes.add('name2', 'unit2')
 
-    handShake = HandShake()
-    handShake.add('deviceID', 'deviceName', commandCatalog.array(), sensorTypes.array())
-
-    return handShake.array(), handShake.dumps()
+    return HandShackDumps('deviceID', 'deviceName', commandCatalog.array(), sensorTypes.array())
 
 
 if __name__ == '__main__':
