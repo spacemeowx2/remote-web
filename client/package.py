@@ -78,7 +78,7 @@ class HandShake:
     def dumps(self):
         return json.dumps(self.s)
 
-def GenTestDump():
+def GenTestArrayAndDump():
 
     commands = Command()
     commands.add('test0')
@@ -96,9 +96,9 @@ def GenTestDump():
     handShake = HandShake()
     handShake.add('deviceID', 'deviceName', commandCatalog.array(), sensorTypes.array())
 
-    return handShake.dumps()
+    return handShake.array(), handShake.dumps()
 
 
 if __name__ == '__main__':
 
-    print GenTestDump()
+    print GenTestArrayAndDump()
