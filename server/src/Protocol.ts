@@ -28,18 +28,18 @@ export interface Command {
 }
 export interface PSensor extends Package {
   type: 'Sensor'
-  typeId: number
+  typeID: number
   Value: number
 }
 export interface PUserCommand extends Package {
   type: 'UserCommand'
-  id: number
+  ID: number
   typeID: number
   cmdID: number
 }
 export interface PUserCommandResponse extends Package {
   type: 'UserCommandResponse'
-  id: number
+  ID: number
   success: boolean
   info: string
 }
