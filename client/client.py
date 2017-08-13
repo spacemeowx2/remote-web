@@ -9,6 +9,7 @@ def on_message(ws, message):
     #d = package.LoadPackage(message)
     #res = run.PackageParser(d)
     #ws.send(package.DumpPackage(res))
+    print message
 
 def on_error(ws, error):
     print(error)
