@@ -3,7 +3,12 @@ import package
 import thread
 import time 
 import run
+import random
+import config
 import dht
+
+import logging
+logging.basicConfig()
 
 def on_message(ws, message):
     #d = package.LoadPackage(message)
@@ -18,17 +23,25 @@ def on_close(ws):
     print("### closed ###")
 
 def on_open(ws):
-    def run(*args):
-        dump = package.GenTestArrayAndDump()
-        ws.send(dump)
-        time.sleep(1)
-        temp = dht.GetTemp()
-        if temp != -1:
-            dump = package.SensorDump(0, temp)
+    deviceConfig = config.DeviceConfig()
+    deviceConfig.Update("device.conf")
+
+    HSPackage = package.GenSH(deviceConfig)
+    print HSPackage,123
+    ws.send(HSPackage)
+
+    def SendRandomData(*args):
+        while True:
+            humdi, temp = dht.GetData()
+            if ( humdi == -1 or temp == -1):
+                continue
+            dump = package.SensorDump(0, temprature)
+            dump1 = package.SensorDump(1, humdi)
             ws.send(dump)
-        ws.close()
-        print("thread terminating...")
-    thread.start_new_thread(run, ())
+            ws.send(dump1)
+            time.sleep(1)
+
+    thread.start_new_thread(SendRandomData, ())
 
 if __name__ == "__main__":
     ws = websocket.WebSocketApp("ws://ali.imspace.cn:3000/device",

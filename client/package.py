@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import json
 
 class Command:
@@ -104,20 +106,31 @@ def LoadPackage(dumps):
 
 def DumpPackage(array):
     return json.dumps(array)
-    
 
-def GenTestArrayAndDump():
+def GenSH(deviceConfig):
 
     commands = Command()
-    commands.add('test0')
-    commands.add('test1')
-    commands.add('test2')
 
     commandCatalog = CommandCatelog()
     commandCatalog.add('test', commands.array())
 
     sensorTypes = SensorType()
-    sensorTypes.add(u'温度', u'℃')
+    for i in deviceConfig.sensorList:
+        sensorTypes.add(deviceConfig.sensorInfo[i]['typeName'], deviceConfig.sensorInfo[i]['unit'])
+
+    return HandShackDumps(deviceConfig.deviceID, deviceConfig.deviceName, commandCatalog.array(), sensorTypes.array())
+    
+
+def GenTestArrayAndDump():
+
+    commands = Command()
+
+    commandCatalog = CommandCatelog()
+    commandCatalog.add('test', commands.array())
+
+    sensorTypes = SensorType()
+    name, unit = config.SensorConf('sensor.conf')
+    sensorTypes.add(name, unit)
 
     return HandShackDumps('deviceID', 'deviceName', commandCatalog.array(), sensorTypes.array())
 

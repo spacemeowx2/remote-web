@@ -10,21 +10,13 @@ GPIO.cleanup()
 # read data using pin 14
 instance = dht11.DHT11(pin = 24)
 
-def GetTemp():
+def GetData():
     result = instance.read()
 
     if result.is_valid():
-        return result.temperature
+        return result.humidity, result.temperature
     else:
-        return -1
-
-def GetHumi():
-    result = instance.read()
-
-    if result.is_valid():
-        return result.humidity
-    else:
-        return -1
+        return -1, -1
 
 
 if __name__ == '__main__':
