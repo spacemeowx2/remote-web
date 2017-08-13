@@ -70,6 +70,8 @@ export class Subscriptor extends Connection {
     this.items = []
     this.map = {}
     this.nextId = 1
+    this.onPublish = () => null
+    this.onPackage = () => null
   }
   onOpen () {
     if (this.items.length > 0) {
@@ -81,7 +83,16 @@ export class Subscriptor extends Connection {
   }
   onMessage (data) {
     if (data.type === 'Data') {
-      this.map[data.id].callback(data.value)
+      const item = this.map[data.id]
+      if (item) {
+        if (item.callback) {
+          item.callback(data.value, item.name, item.args)
+        } else {
+          this.onPublish(data.value, item.name, item.args)
+        }
+      }
+    } else {
+      this.onPackage(data)
     }
   }
   unsubscribe (id) {
@@ -115,6 +126,7 @@ export class Subscriptor extends Connection {
     try {
       this.send({
         type: 'Subscribe',
+        id: item.id,
         name: item.name,
         args: item.args
       })

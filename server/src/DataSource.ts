@@ -4,7 +4,7 @@ interface ISubscriber {
   id: number
   callback: Function
 }
-interface DataNode<T> {
+export interface DataNode<T> {
   children?: {
     [key: string]: DataNode<T>
   }
@@ -89,5 +89,29 @@ export class DataSource<T> {
       cur = cur.children[arg]
     }
     return cur
+  }
+}
+export class DataSourceMap<T, U> extends Map<T, U> {
+  constructor (
+    private dataSource: DataSource<U>,
+    private map: (key: T) => TreeKey[] = key => [key.toString()]
+  ) {
+    super()
+  }
+  get (key: T) {
+    return super.get(key)
+  }
+  set (key: T, value: U) {
+    let ret = super.set(key, value)
+    this.update(key)
+    return ret
+  }
+  delete (key: T) {
+    let ret = super.delete(key)
+    this.update(key)
+    return ret
+  }
+  update (key: T) {
+    this.dataSource.publish(this.get(key), ...this.map(key))
   }
 }

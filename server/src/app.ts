@@ -7,7 +7,7 @@ import { IDevice } from './IDevice'
 import { TestDevice } from './TestDevice'
 import { Client } from './Client'
 import { Logger } from './Logger'
-import { DataSource } from './DataSource'
+import { DataSource, DataSourceMap, DataNode } from './DataSource'
 const logger = new Logger('Server')
 Logger.enableAll()
 
@@ -22,49 +22,47 @@ function removeArray<T> (ary: T[], element: T) {
   }
 }
 
-class DeviceMap extends Map<string, IDevice> {
-  constructor (private app: App) {
-    super()
-  }
-  get (key: string) {
-    return super.get(key)
+class DeviceMap extends DataSourceMap<string, IDevice> {
+  constructor (dataSource: DataSource<IDevice>) {
+    super(dataSource)
   }
   add (device: IDevice) {
     this.set(device.deviceID, device)
-  }
-  set (key: string, value: IDevice) {
-    let ret = super.set(key, value)
-    this.app.onUpdateDevice()
-    this.app.getDataSource('DeviceDetail').publish(value, key)
-    return ret
-  }
-  delete (key: string) {
-    return super.delete(key)
   }
 }
 
 export class App {
   private app = websockify(new Koa())
-  private devices: DeviceMap = new DeviceMap(this)
+  private devices: DeviceMap
   private clients: Client[] = []
   private dataSources: Map<string, DataSource<any>> = new Map()
   constructor () {
-    this.dataSources.set('sensor', new DataSource())
+    this.dataSources.set('Sensor', new DataSource())
     this.dataSources.set('DeviceList', new DataSource())
     this.dataSources.set('DeviceDetail', new DataSource())
+    const deviceList: DataSource<any[]> = this.getDataSource('DeviceList')
+    const deviceDetail: DataSource<IDevice> = this.getDataSource('DeviceDetail')
+    this.devices = new DeviceMap(deviceDetail)
+    deviceDetail.subscribe((data: DataNode<IDevice>) => {
+      let devices = Array.from(this.devices.values())
+      devices = devices.filter(i => !!(i.deviceID && i.deviceName))
+      deviceList.publish(devices.map(i => ({
+        id: i.deviceID,
+        name: i.deviceName
+      })))
+    })
 
-    this.devices.add(new TestDevice(this))
+    this.devices.add(new TestDevice(this, 'test'))
 
     this.initRouter()
     this.app.listen(3000)
     logger.log('Server start listening on port 3000')
   }
-  onUpdateDevice () {
-    let devices = Array.from(this.devices.values())
-    this.getDataSource('DeviceList').publish(devices.map(i => ({
-      id: i.deviceID,
-      name: i.deviceName
-    })))
+  getDevice (deviceID: string) {
+    return this.devices.get(deviceID)
+  }
+  updateDevice (deviceID: string) {
+    this.devices.update(deviceID)
   }
   getDataSource (name: string) {
     return this.dataSources.get(name)
@@ -87,6 +85,7 @@ export class App {
     route.all('/repeat', async (ctx, next) => {
       logger.debug('New Repeat')
       ctx.websocket.on('message', message => {
+        console.log('Repeat: ', message)
         ctx.websocket.send(message)
       })
     })

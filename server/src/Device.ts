@@ -43,10 +43,11 @@ export class Device extends ProtocolHandler implements IDevice {
       unit: i.unit
     }))
     logger.debug('Handshake', JSON.stringify(this))
-    this.sensorSource = this.app.getDataSource('sensor')
+    this.sensorSource = this.app.getDataSource('Sensor')
     for (let sensor of this.sensorTypes) {
       this.sensorSource.publish(null, this.deviceID, sensor.typeID)
     }
+    this.app.updateDevice(this.deviceID)
   }
   onClose (code: any, msg: any) {
     super.onClose(code, msg)
