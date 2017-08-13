@@ -16,7 +16,7 @@ def GetTemp():
     if result.is_valid():
         return result.temperature
     else:
-        return result.error_code
+        return -1
 
 def GetHumi():
     result = instance.read()
@@ -24,7 +24,7 @@ def GetHumi():
     if result.is_valid():
         return result.humidity
     else:
-        return result.error_code
+        return -1
 
 
 if __name__ == '__main__':

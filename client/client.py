@@ -23,8 +23,9 @@ def on_open(ws):
         ws.send(dump)
         time.sleep(1)
         temp = dht.GetTemp()
-        dump = package.SensorDump(1, temp)
-        ws.send(dump)
+        if temp != -1:
+            dump = package.SensorDump(1, temp)
+            ws.send(dump)
         ws.close()
         print("thread terminating...")
     thread.start_new_thread(run, ())
