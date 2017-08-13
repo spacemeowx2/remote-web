@@ -18,16 +18,16 @@ def on_close(ws):
 def on_open(ws):
     def run(*args):
         dump = package.GenTestArrayAndDump()
-        for i in range(3):
+        for i in range(1):
             time.sleep(1)
             ws.send(dump)
-        time.sleep(1)
+        time.sleep(10)
         ws.close()
         print("thread terminating...")
     thread.start_new_thread(run, ())
 
 if __name__ == "__main__":
-    ws = websocket.WebSocketApp("ws://192.168.199.152:3000/repeat",
+    ws = websocket.WebSocketApp("ws://192.168.199.152:3000/device",
                               on_message = on_message,
                               on_error = on_error,
                               on_close = on_close)
