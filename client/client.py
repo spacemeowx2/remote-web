@@ -24,7 +24,7 @@ def on_open(ws):
         time.sleep(1)
         temp = dht.GetTemp()
         if temp != -1:
-            dump = package.SensorDump(1, temp)
+            dump = package.SensorDump(0, temp)
             ws.send(dump)
         ws.close()
         print("thread terminating...")
