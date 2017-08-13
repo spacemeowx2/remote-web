@@ -27,7 +27,7 @@ def on_open(ws):
     deviceConfig.Update("device.conf")
 
     HSPackage = package.GenSH(deviceConfig)
-    print HSPackage,123
+    #print HSPackage,123
     ws.send(HSPackage)
 
     def SendRandomData(*args):
@@ -35,7 +35,7 @@ def on_open(ws):
             humdi, temp = dht.GetData()
             if ( humdi == -1 or temp == -1):
                 continue
-            dump = package.SensorDump(0, temprature)
+            dump = package.SensorDump(0, temp)
             dump1 = package.SensorDump(1, humdi)
             ws.send(dump)
             ws.send(dump1)
