@@ -52,6 +52,7 @@ class SensorType:
             'unit': unit
         })
         self.nextID += 1
+        return self.nextID - 1
     
     def array(self):
         return self.s
@@ -76,8 +77,8 @@ def HartbeatDUmp():
 def SensorDump(typeID, Value):
     return json.dumps({
         'type': 'Sensor',
-        'TypeID': typeID,
-        'Value': Value
+        'typeID': typeID,
+        'value': Value
         })
 
 def UserCommandDump(ID, typeID, cmdID):
@@ -114,9 +115,7 @@ def GenTestArrayAndDump():
     commandCatalog.add('test', commands.array())
 
     sensorTypes = SensorType()
-    sensorTypes.add('name0', 'unit0')
-    sensorTypes.add('name1', 'unit1')
-    sensorTypes.add('name2', 'unit2')
+    sensorTypes.add(u'温度', u'℃')
 
     return HandShackDumps('deviceID', 'deviceName', commandCatalog.array(), sensorTypes.array())
 
