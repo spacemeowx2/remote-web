@@ -93,9 +93,7 @@ export default {
   created () {
     this.subscriptor = new Subscriptor(this.wsServer)
     this.subscriptor.onPublish = (data, name, args) => this.onPublish(data, name, args)
-    this.subscriptor.subscribe('DeviceList', data => {
-      this.deviceList = data.data
-    })
+    this.subscriptor.subscribe('DeviceList', null)
     this.nowInterval = setInterval(() => {
       this.now = getTime()
     }, 1000)
@@ -120,21 +118,26 @@ export default {
       // console.log('package', data, name, args)
       switch (name) {
         case 'DeviceDetail': {
-          const detail = data.data
+          const detail = data.d
           if (detail) {
             this.devices[args[0]] = detail
           }
           break
         }
         case 'Sensor': {
-          const sensor = data.children
+          const sensor = data.c
           if (sensor) {
             for (let key of Object.keys(sensor)) {
-              sensor[key] = sensor[key].data
+              sensor[key] = sensor[key].d
             }
             this.$set(this.sensors, args[0], sensor)
             // this.sensors[args[0]] = sensor
           }
+          break
+        }
+        case 'DeviceList': {
+          this.deviceList = data.d
+          break
         }
       }
     },

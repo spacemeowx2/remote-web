@@ -4,16 +4,30 @@ interface ISubscriber {
   id: number
   callback: Function
 }
-export interface DataNode<T> {
+function getTimeStamp () {
+  return Math.floor((new Date()).getTime() / 1000)
+}
+export class DataNode<T> {
   children?: {
     [key: string]: DataNode<T>
   }
   data?: T
+  timestamp?: number
+  toJSON () {
+    let ret: any = {
+      c: this.children,
+      d: this.data
+    }
+    if (this.timestamp) {
+      ret.t = getTimeStamp() - this.timestamp
+    }
+    return ret
+  }
 }
 export class DataSource<T> {
   subscriber: Map<number, ISubscriber> = new Map()
   nextId = 1
-  private data: DataNode<T> = {}
+  private root: DataNode<T> = new DataNode()
   private parent: WeakMap<DataNode<T>, DataNode<T>> = new WeakMap()
   private nodeSubscriber: WeakMap<DataNode<T>, ISubscriber[]> = new WeakMap()
   notify (cur: DataNode<T>) {
@@ -28,8 +42,9 @@ export class DataSource<T> {
     }
   }
   publish (value: T, ...args: TreeKey[]) {
-    let cur = this.gotoNode(this.data, args)
+    let cur = this.gotoNode(this.root, args)
     cur.data = value
+    cur.timestamp = getTimeStamp()
     this.notify(cur)
   }
   subscribe (...args: any[]) {
@@ -45,7 +60,7 @@ export class DataSource<T> {
     }
     this.subscriber.set(item.id, item)
 
-    let cur = this.gotoNode(this.data, args)
+    let cur = this.gotoNode(this.root, args)
     let ary = this.nodeSubscriber.get(cur)
     if (!ary) {
       this.nodeSubscriber.set(cur, ary = [])
@@ -58,7 +73,7 @@ export class DataSource<T> {
     const item = this.subscriber.get(id)
     const args = item.args
 
-    let cur = this.gotoNode(this.data, args)
+    let cur = this.gotoNode(this.root, args)
     const ary = this.nodeSubscriber.get(cur)
     const idx = ary.indexOf(item)
     ary.splice(idx, 1)
@@ -82,7 +97,7 @@ export class DataSource<T> {
         cur.children = {}
       }
       if (!cur.children[arg]) {
-        let item = {}
+        let item = new DataNode<T>()
         cur.children[arg] = item
         this.parent.set(item, cur)
       }
