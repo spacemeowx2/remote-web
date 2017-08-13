@@ -61,6 +61,8 @@ export class ProtocolHandler {
         }
       }
     })
+    ws.on('close', (code, message) => this.onClose(code, message))
+    ws.on('error', (err) => this.onError(err))
   }
   static Type (type: string) {
     return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
@@ -71,6 +73,12 @@ export class ProtocolHandler {
       }
       map.set(type, target[propertyKey])
     }
+  }
+  protected onError (err: Error) {
+    logger.error('onError', err)
+  }
+  protected onClose (code: any, message: any) {
+    logger.error('onClose', code, message)
   }
   protected onMessage (data: Package) {
     const map = TypeMap.get(this.constructor)

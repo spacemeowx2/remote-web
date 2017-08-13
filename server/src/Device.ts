@@ -4,15 +4,16 @@ import { ProtocolHandler } from './Protocol'
 import { App } from './app'
 import { IDevice } from './IDevice'
 import { Logger } from './Logger'
+import { DataSource } from './DataSource'
 const logger = new Logger('Client')
 const Type = ProtocolHandler.Type
 
 export class Device extends ProtocolHandler implements IDevice {
-  static typeMap: Map<string, Function> = new Map()
   deviceName: string
   deviceID: string
   supportCommand: Protocol.CommandCatelog[]
   sensorTypes: Protocol.SensorType[]
+  sensorSource: DataSource<number>
   constructor (private app: App, ws: WebSocket) {
     super(ws)
   }
@@ -42,5 +43,15 @@ export class Device extends ProtocolHandler implements IDevice {
       unit: i.unit
     }))
     logger.debug('Handshake', JSON.stringify(this))
+    this.sensorSource = this.app.getDataSource('sensor')
+    for (let sensor of this.sensorTypes) {
+      this.sensorSource.publish(null, this.deviceID, sensor.typeID)
+    }
+  }
+  onClose (code: any, msg: any) {
+    super.onClose(code, msg)
+  }
+  onError (err: Error) {
+    super.onError(err)
   }
 }
