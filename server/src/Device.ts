@@ -25,6 +25,11 @@ export class Device extends ProtocolHandler implements IDevice {
       sensorTypes: this.sensorTypes
     }
   }
+  @Type('Sensor')
+  onSensor (data: Protocol.PSensor) {
+    console.log('Sensor', data)
+    this.sensorSource.publish(data.value, this.deviceID, data.typeID)
+  }
   @Type('Handshake')
   onHandshake (data: Protocol.PHandshake) {
     this.deviceName = data.deviceName
@@ -47,7 +52,7 @@ export class Device extends ProtocolHandler implements IDevice {
     for (let sensor of this.sensorTypes) {
       this.sensorSource.publish(null, this.deviceID, sensor.typeID)
     }
-    this.app.updateDevice(this.deviceID)
+    this.app.deviceAuthed(this)
   }
   onClose (code: any, msg: any) {
     super.onClose(code, msg)

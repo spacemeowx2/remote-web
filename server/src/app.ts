@@ -33,7 +33,8 @@ class DeviceMap extends DataSourceMap<string, IDevice> {
 
 export class App {
   private app = websockify(new Koa())
-  private devices: DeviceMap
+  private devices: IDevice[] = []
+  private deviceMap: DeviceMap
   private clients: Client[] = []
   private dataSources: Map<string, DataSource<any>> = new Map()
   constructor () {
@@ -42,9 +43,9 @@ export class App {
     this.dataSources.set('DeviceDetail', new DataSource())
     const deviceList: DataSource<any[]> = this.getDataSource('DeviceList')
     const deviceDetail: DataSource<IDevice> = this.getDataSource('DeviceDetail')
-    this.devices = new DeviceMap(deviceDetail)
+    this.deviceMap = new DeviceMap(deviceDetail)
     deviceDetail.subscribe((data: DataNode<IDevice>) => {
-      let devices = Array.from(this.devices.values())
+      let devices = Array.from(this.deviceMap.values())
       devices = devices.filter(i => !!(i.deviceID && i.deviceName))
       deviceList.publish(devices.map(i => ({
         id: i.deviceID,
@@ -52,17 +53,17 @@ export class App {
       })))
     })
 
-    this.devices.add(new TestDevice(this, 'test'))
+    this.devices.push(new TestDevice(this, 'test'))
 
     this.initRouter()
     this.app.listen(3000)
     logger.log('Server start listening on port 3000')
   }
   getDevice (deviceID: string) {
-    return this.devices.get(deviceID)
+    return this.deviceMap.get(deviceID)
   }
-  updateDevice (deviceID: string) {
-    this.devices.update(deviceID)
+  deviceAuthed (device: IDevice) {
+    this.deviceMap.add(device)
   }
   getDataSource (name: string) {
     return this.dataSources.get(name)
@@ -74,7 +75,7 @@ export class App {
     const route = new Route()
     route.all('/device', async (ctx, next) => {
       logger.debug('New Device')
-      this.devices.add(new Device(this, ctx.websocket))
+      this.devices.push(new Device(this, ctx.websocket))
     })
 
     route.all('/client', async (ctx, next) => {
