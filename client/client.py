@@ -2,9 +2,12 @@ import websocket
 import package
 import thread
 import time 
+import run
 
 def on_message(ws, message):
-    print(message)
+    d = package.LoadPackage(message)
+    res = run.PackageParser(d)
+    ws.send(package.DumpPackage(res))
 
 def on_error(ws, error):
     print(error)
@@ -24,7 +27,7 @@ def on_open(ws):
     thread.start_new_thread(run, ())
 
 if __name__ == "__main__":
-    ws = websocket.WebSocketApp("ws://192.168.199.152:3000/device",
+    ws = websocket.WebSocketApp("ws://192.168.199.152:3000/repeat",
                               on_message = on_message,
                               on_error = on_error,
                               on_close = on_close)
