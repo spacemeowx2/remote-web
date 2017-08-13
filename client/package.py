@@ -76,8 +76,8 @@ def HartbeatDUmp():
 def SensorDump(typeID, Value):
     return json.dumps({
         'type': 'Sensor',
-        'TypeID': typeID,
-        'Value': Value
+        'typeID': typeID,
+        'value': Value
         })
 
 def UserCommandDump(ID, typeID, cmdID):
