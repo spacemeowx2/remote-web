@@ -27,7 +27,7 @@ def GetHumi():
         return result.error_code
 
 
-if __name__ = '__main__':
+if __name__ == '__main__':
     while True:
         result = instance.read()
 
