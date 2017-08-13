@@ -27,21 +27,17 @@ export class Device extends ProtocolHandler implements IDevice {
     }
   }
   async doCommand (typeID: string, cmdID: string) {
-    try {
-      const id = this.nextCommandID++
-      this.send({
-        type: 'UserCommand',
-        ID: id,
-        typeID,
-        cmdID
-      })
-      let resp = await this.waitPackage('UserCommandResponse', {
-        ID: id
-      })
-      return resp
-    } catch (e) {
-      console.error(e)
-    }
+    const id = this.nextCommandID++
+    this.send({
+      type: 'UserCommand',
+      ID: id,
+      typeID,
+      cmdID
+    })
+    let resp = await this.waitPackage('UserCommandResponse', {
+      ID: id
+    })
+    return resp
   }
   @Type('Sensor')
   onSensor (data: Protocol.PSensor) {

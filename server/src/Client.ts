@@ -24,7 +24,8 @@ export class Client extends ProtocolHandler {
   @Type('DoCommand')
   async onDoCommand ({deviceID, typeID, cmdID}: any) {
     let device = this.app.getDevice(deviceID)
-    const resp = await device.doCommand(typeID, cmdID)
+    let resp = null
+    resp = await device.doCommand(typeID, cmdID)
     return resp
   }
   @Type('GetDeviceDetail')

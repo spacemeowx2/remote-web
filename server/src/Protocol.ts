@@ -99,7 +99,7 @@ export class ProtocolHandler {
       waiting.push(item)
       setTimeout(() => {
         del()
-        reject()
+        reject(new Error('waitPackage timeout'))
       }, timeout)
     })
   }
