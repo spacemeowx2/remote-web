@@ -12,7 +12,7 @@
         .md-title {{catelog.typeName}}
       md-card-content
         md-list
-          md-list-item(@click='$emit("command", catelog.typeID, cmd.cmdID)', v-for='cmd in catelog.commands', :key='cmd.cmdID') {{cmd.cmdName}}
+          md-list-item(@click='$emit("command", deviceId, catelog.typeID, cmd.cmdID)', v-for='cmd in catelog.commands', :key='cmd.cmdID') {{cmd.cmdName}}
   div(v-if='!ready', style='text-align: center')
     md-spinner(md-indeterminate)
 </template>
@@ -53,7 +53,7 @@ export default {
       })
     }
   },
-  props: ['sensorTypes', 'sensorValues', 'supportCommand', 'ready']
+  props: ['deviceId', 'sensorTypes', 'sensorValues', 'supportCommand', 'ready']
 }
 </script>
 

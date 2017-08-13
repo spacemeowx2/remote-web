@@ -64,8 +64,8 @@ export class App {
     this.app.listen(3000)
     logger.log('Server start listening on port 3000')
   }
-  getDevice (deviceID: string) {
-    return this.deviceMap.get(deviceID)
+  getDevice (deviceID: string): Device {
+    return this.deviceMap.get(deviceID) as any
   }
   deviceAuthed (device: IDevice) {
     this.deviceMap.add(device)

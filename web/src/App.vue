@@ -11,10 +11,11 @@
       md-tab(v-for='i in deviceList', :key='i.id', :md-label='i.name')
         device(
           @command='doCommand',
+          :device-id='i.id'
           :ready='!!devices[i.id]'
-          :sensorTypes='devices[i.id] && devices[i.id].sensorTypes',
-          :supportCommand='devices[i.id] && devices[i.id].supportCommand'
-          :sensorValues='sensors[i.id]'
+          :sensor-types='devices[i.id] && devices[i.id].sensorTypes',
+          :support-command='devices[i.id] && devices[i.id].supportCommand'
+          :sensor-values='sensors[i.id]'
         )
   md-dialog-prompt(
     v-if='promptShow'
@@ -40,46 +41,10 @@ export default {
   },
   data () {
     return {
-      wsServer: 'ws://ali.imspace.cn:3000/client',
+      wsServer: `ws://${location.hostname}:3000/client`,
       promptShow: true,
-      deviceList: [{
-        id: 'testDevice',
-        name: '家'
-      }],
-      devices: {
-        test2: {
-          sensorTypes: [{
-            typeID: 1,
-            typeName: '温度',
-            unit: '℃'
-          }, {
-            typeID: 2,
-            typeName: '湿度',
-            unit: '%'
-          }],
-          supportCommand: [{
-            typeID: 1,
-            typeName: '测试类别',
-            commands: [{
-              cmdID: 1,
-              cmdName: '开机'
-            }, {
-              cmdID: 2,
-              cmdName: '关机'
-            }]
-          }, {
-            typeID: 2,
-            typeName: '测试类别2',
-            commands: [{
-              cmdID: 1,
-              cmdName: '开机'
-            }, {
-              cmdID: 2,
-              cmdName: '关机'
-            }]
-          }]
-        }
-      },
+      deviceList: [],
+      devices: {},
       sensors: {},
       activeDeviceId: null,
       nowInterval: null,
@@ -94,8 +59,14 @@ export default {
     this.subscriptor.subscribe('DeviceList', null)
   },
   methods: {
-    doCommand (typeId, cmdId) {
-      console.log(typeId, cmdId)
+    doCommand (deviceId, typeId, cmdId) {
+      console.log(deviceId, typeId, cmdId)
+      this.subscriptor.send({
+        type: 'DoCommand',
+        deviceID: deviceId,
+        typeID: typeId,
+        cmdID: cmdId
+      })
     },
     openDialog () {
       this.promptValue = this.wsServer

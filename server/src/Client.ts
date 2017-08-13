@@ -21,6 +21,11 @@ export class Client extends ProtocolHandler {
   constructor (private app: App, ws: WebSocket) {
     super(ws)
   }
+  @Type('DoCommand')
+  onDoCommand ({deviceID, typeID, cmdID}: any) {
+    let device = this.app.getDevice(deviceID)
+    device.doCommand(typeID, cmdID)
+  }
   @Type('GetDeviceDetail')
   onGetDeviceDetail ({deviceId}: any) {
     let ret = this.app.getDevice(deviceId)
