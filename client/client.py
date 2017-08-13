@@ -3,11 +3,12 @@ import package
 import thread
 import time 
 import run
+import dht
 
 def on_message(ws, message):
-    d = package.LoadPackage(message)
-    res = run.PackageParser(d)
-    ws.send(package.DumpPackage(res))
+    #d = package.LoadPackage(message)
+    #res = run.PackageParser(d)
+    #ws.send(package.DumpPackage(res))
 
 def on_error(ws, error):
     print(error)
@@ -18,10 +19,11 @@ def on_close(ws):
 def on_open(ws):
     def run(*args):
         dump = package.GenTestArrayAndDump()
-        for i in range(1):
-            time.sleep(1)
-            ws.send(dump)
-        time.sleep(10)
+        ws.send(dump)
+        time.sleep(1)
+        temp = dht.GetTemp()
+        dump = package.SensorDump(1, temp)
+        ws.send(dump)
         ws.close()
         print("thread terminating...")
     thread.start_new_thread(run, ())
