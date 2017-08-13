@@ -29,7 +29,7 @@ export interface Command {
 export interface PSensor extends Package {
   type: 'Sensor'
   typeID: number
-  Value: number
+  value: number
 }
 export interface PUserCommand extends Package {
   type: 'UserCommand'
@@ -84,7 +84,7 @@ export class ProtocolHandler {
     const map = TypeMap.get(this.constructor)
     const handler = map.get(data.type)
     if (!handler) {
-      logger.error('The handler of type is not found')
+      logger.error('The handler of type is not found', data.type)
       return
     }
     const response = handler.call(this, data)

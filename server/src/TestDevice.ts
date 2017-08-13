@@ -30,7 +30,7 @@ export class TestDevice extends Device {
         unit: '%'
       }]
     })
-    this.timer = setInterval(() => this.onInterval(), 1000)
+    this.timer = setInterval(() => this.onInterval(), 10000)
   }
   onInterval () {
     this.sensorSource.publish(25, this.deviceID, 1)

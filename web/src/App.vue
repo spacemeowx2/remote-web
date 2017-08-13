@@ -31,9 +31,8 @@
 <script>
 import Device from './components/Device'
 import {Subscriptor} from './connection'
-function getTime () {
-  return (new Date()).getTime()
-}
+import {util} from './util'
+
 export default {
   name: 'app',
   components: {
@@ -41,7 +40,7 @@ export default {
   },
   data () {
     return {
-      wsServer: 'ws://192.168.199.152:3000/client',
+      wsServer: 'ws://ali.imspace.cn:3000/client',
       promptShow: true,
       deviceList: [{
         id: 'testDevice',
@@ -83,7 +82,6 @@ export default {
       },
       sensors: {},
       activeDeviceId: null,
-      now: getTime(),
       nowInterval: null,
       subscriptor: null,
       lastDeviceSID: null,
@@ -93,15 +91,7 @@ export default {
   created () {
     this.subscriptor = new Subscriptor(this.wsServer)
     this.subscriptor.onPublish = (data, name, args) => this.onPublish(data, name, args)
-    this.subscriptor.subscribe('DeviceList', data => {
-      this.deviceList = data.data
-    })
-    this.nowInterval = setInterval(() => {
-      this.now = getTime()
-    }, 1000)
-  },
-  destroyed () {
-    clearInterval(this.nowInterval)
+    this.subscriptor.subscribe('DeviceList', null)
   },
   methods: {
     doCommand (typeId, cmdId) {
@@ -120,21 +110,26 @@ export default {
       // console.log('package', data, name, args)
       switch (name) {
         case 'DeviceDetail': {
-          const detail = data.data
+          const detail = data.d
           if (detail) {
             this.devices[args[0]] = detail
           }
           break
         }
         case 'Sensor': {
-          const sensor = data.children
+          const sensor = data.c
           if (sensor) {
             for (let key of Object.keys(sensor)) {
-              sensor[key] = sensor[key].data
+              sensor[key].t = util.nowSec - sensor[key].t
             }
             this.$set(this.sensors, args[0], sensor)
             // this.sensors[args[0]] = sensor
           }
+          break
+        }
+        case 'DeviceList': {
+          this.deviceList = data.d
+          break
         }
       }
     },
