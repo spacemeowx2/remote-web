@@ -12,6 +12,7 @@ class Command:
             'cmdName': command
         })
         self.nextID += 1
+        return self.nextID - 1
     
     def array(self):
         return self.commands
@@ -32,6 +33,7 @@ class CommandCatelog:
             'commands': commands
         })
         self.nextID += 1
+        return self.nextID - 1
     
     def array(self):
         return self.s
