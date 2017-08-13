@@ -22,9 +22,10 @@ export class Client extends ProtocolHandler {
     super(ws)
   }
   @Type('DoCommand')
-  onDoCommand ({deviceID, typeID, cmdID}: any) {
+  async onDoCommand ({deviceID, typeID, cmdID}: any) {
     let device = this.app.getDevice(deviceID)
-    device.doCommand(typeID, cmdID)
+    const resp = await device.doCommand(typeID, cmdID)
+    return resp
   }
   @Type('GetDeviceDetail')
   onGetDeviceDetail ({deviceId}: any) {

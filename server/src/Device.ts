@@ -14,6 +14,7 @@ export class Device extends ProtocolHandler implements IDevice {
   supportCommand: Protocol.CommandCatelog[]
   sensorTypes: Protocol.SensorType[]
   sensorSource: DataSource<number>
+  private nextCommandID = 1
   constructor (private app: App, ws: WebSocket) {
     super(ws)
   }
@@ -25,14 +26,19 @@ export class Device extends ProtocolHandler implements IDevice {
       sensorTypes: this.sensorTypes
     }
   }
-  doCommand (typeID: string, cmdID: string) {
+  async doCommand (typeID: string, cmdID: string) {
     try {
+      const id = this.nextCommandID++
       this.send({
         type: 'UserCommand',
-        ID: 1,
+        ID: id,
         typeID,
         cmdID
       })
+      let resp = await this.waitPackage('UserCommandResponse', {
+        ID: id
+      })
+      return resp
     } catch (e) {
       console.error(e)
     }

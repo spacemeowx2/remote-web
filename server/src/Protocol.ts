@@ -45,7 +45,12 @@ export interface PUserCommandResponse extends Package {
 }
 
 const TypeMap: Map<Function, Map<string, Function>> = new Map()
+interface IWaitTemplate {
+  callback: (data: Package) => void
+  template: any
+}
 export class ProtocolHandler {
+  private waitingMap: Map<string, IWaitTemplate[]> = new Map()
   constructor (private ws: WebSocket) {
     if (!ws) {
       return
@@ -74,20 +79,58 @@ export class ProtocolHandler {
       map.set(type, target[propertyKey])
     }
   }
+  waitPackage (type: string, template: any, timeout = 5000) {
+    let waiting = this.waitingMap.get(type)
+    if (!waiting) {
+      this.waitingMap.set(type, waiting = [])
+    }
+    return new Promise<Package>((resolve, reject) => {
+      const del = () => {
+        const idx = waiting.indexOf(item)
+        waiting.splice(idx, 1)
+      }
+      const item = {
+        callback (data: Package) {
+          del()
+          resolve(data)
+        },
+        template
+      }
+      waiting.push(item)
+      setTimeout(() => {
+        del()
+        reject()
+      }, timeout)
+    })
+  }
   protected onError (err: Error) {
     logger.error('onError', err)
   }
   protected onClose (code: any, message: any) {
     logger.error('onClose', code, message)
   }
-  protected onMessage (data: Package) {
+  protected async onMessage (data: Package) {
+    const waiting = this.waitingMap.get(data.type)
+    if (waiting && waiting.length > 0) {
+      for (let item of waiting) {
+        const t = item.template
+        const d = data as any
+        if (Object.keys(t).every(k => t[k] === d[k])) {
+          item.callback(data)
+          return
+        }
+      }
+    }
     const map = TypeMap.get(this.constructor)
     const handler = map.get(data.type)
     if (!handler) {
       logger.error('The handler of type is not found', data.type)
       return
     }
-    const response = handler.call(this, data)
+    let response = handler.call(this, data)
+    if (response instanceof Promise) {
+      response = await response
+    }
     if (response !== undefined) {
       this.send(response)
     }

@@ -36,4 +36,7 @@ export class TestDevice extends Device {
     this.sensorSource.publish(25, this.deviceID, 1)
     this.sensorSource.publish(60, this.deviceID, 2)
   }
+  protected send () {
+    return
+  }
 }
