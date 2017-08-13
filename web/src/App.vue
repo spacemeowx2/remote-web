@@ -40,7 +40,7 @@ export default {
   },
   data () {
     return {
-      wsServer: 'ws://192.168.199.152:3000/client',
+      wsServer: 'ws://ali.imspace.cn:3000/client',
       promptShow: true,
       deviceList: [{
         id: 'testDevice',
