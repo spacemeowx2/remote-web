@@ -31,9 +31,8 @@
 <script>
 import Device from './components/Device'
 import {Subscriptor} from './connection'
-function getTime () {
-  return (new Date()).getTime()
-}
+import {util} from './util'
+
 export default {
   name: 'app',
   components: {
@@ -83,7 +82,6 @@ export default {
       },
       sensors: {},
       activeDeviceId: null,
-      now: getTime(),
       nowInterval: null,
       subscriptor: null,
       lastDeviceSID: null,
@@ -94,12 +92,6 @@ export default {
     this.subscriptor = new Subscriptor(this.wsServer)
     this.subscriptor.onPublish = (data, name, args) => this.onPublish(data, name, args)
     this.subscriptor.subscribe('DeviceList', null)
-    this.nowInterval = setInterval(() => {
-      this.now = getTime()
-    }, 1000)
-  },
-  destroyed () {
-    clearInterval(this.nowInterval)
   },
   methods: {
     doCommand (typeId, cmdId) {
@@ -128,7 +120,7 @@ export default {
           const sensor = data.c
           if (sensor) {
             for (let key of Object.keys(sensor)) {
-              sensor[key] = sensor[key].d
+              sensor[key].t = util.nowSec - sensor[key].t
             }
             this.$set(this.sensors, args[0], sensor)
             // this.sensors[args[0]] = sensor
