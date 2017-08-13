@@ -63,41 +63,45 @@ class SensorType:
     
 def HandShackDumps(deviceID, deviceName, supportCommand, sensorType):
     return json.dumps({
-            'type': 'Handshake',
-            'deviceID': deviceID,
-            'deviceName': deviceName,
-            'supportCommand': supportCommand,
-            'sensorTypes': sensorType
-            })
+        'type': 'Handshake',
+        'deviceID': deviceID,
+        'deviceName': deviceName,
+        'supportCommand': supportCommand,
+        'sensorTypes': sensorType
+        })
 
 def HartbeatDUmp():
     return json.dumps({'type': 'Heartbeat'})
 
 def SensorDump(typeID, Value):
     return json.dumps({
-            'type': 'Sensor',
-            'TypeID': typeID,
-            'Value': Value
-            })
+        'type': 'Sensor',
+        'TypeID': typeID,
+        'Value': Value
+        })
 
 def UserCommandDump(ID, typeID, cmdID):
     return json.dupms({
-            'type': 'UserCommand',
-            'ID': ID,
-            'typeID': typeID,
-            'cmdID': cmdID
-            })
+        'type': 'UserCommand',
+        'ID': ID,
+        'typeID': typeID,
+        'cmdID': cmdID
+        })
 
 def UserCmdResponseDump(ID, isSuccess, info):
     return json.dumps({
-            'type': 'UserCommandResponse',
-            'ID': ID,
-            'success': isSuccess,
-            'info': info 
-            })
+        'type': 'UserCommandResponse',
+        'ID': ID,
+        'success': isSuccess,
+        'info': info 
+        })
 
 def LoadPackage(dumps):
     return json.loads(dumps)
+
+def DumpPackage(array):
+    return json.dumps(array)
+    
 
 def GenTestArrayAndDump():
 

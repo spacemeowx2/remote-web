@@ -2,11 +2,12 @@ import websocket
 import package
 import thread
 import time 
-import json
+import run
 
 def on_message(ws, message):
-    s = package.LoadPackage(message)
-    print json.dumps(s, indent = 4)
+    d = package.LoadPackage(message)
+    res = run.PackageParser(d)
+    ws.send(package.DumpPackage(res))
 
 def on_error(ws, error):
     print(error)
