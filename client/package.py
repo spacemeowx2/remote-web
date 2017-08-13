@@ -61,10 +61,10 @@ class SensorType:
 
 
     
-def HandShackDumps(deviceId, deviceName, supportCommand, sensorType):
+def HandShackDumps(deviceID, deviceName, supportCommand, sensorType):
     return json.dumps({
             'type': 'Handshake',
-            'deviceID': deviceID
+            'deviceID': deviceID,
             'deviceName': deviceName,
             'supportCommand': supportCommand,
             'sensorTypes': sensorType
@@ -85,7 +85,7 @@ def UserCommandDump(ID, typeID, cmdID):
             'type': 'UserCommand',
             'ID': ID,
             'typeID': typeID,
-            'cmdID', cmdID
+            'cmdID': cmdID
             })
 
 def UserCmdResponseDump(ID, isSuccess, info):
@@ -95,6 +95,9 @@ def UserCmdResponseDump(ID, isSuccess, info):
             'success': isSuccess,
             'info': info 
             })
+
+def LoadPackage(dumps):
+    return json.loads(dumps)
 
 def GenTestArrayAndDump():
 
