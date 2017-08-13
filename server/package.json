@@ -28,10 +28,12 @@
     "@types/koa": "^2.0.39",
     "@types/koa-bodyparser": "^3.0.23",
     "@types/koa-router": "^7.0.22",
+    "@types/koa-static": "^3.0.0",
     "@types/ws": "^3.0.2",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.2.1",
+    "koa-static": "^4.0.1",
     "koa-websocket": "^4.0.0",
     "reflect-metadata": "^0.1.10",
     "typeorm": "0.1.0-alpha.34"
