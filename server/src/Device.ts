@@ -26,12 +26,16 @@ export class Device extends ProtocolHandler implements IDevice {
     }
   }
   doCommand (typeID: string, cmdID: string) {
-    this.send({
-      type: 'UserCommand',
-      ID: 1,
-      typeID,
-      cmdID
-    })
+    try {
+      this.send({
+        type: 'UserCommand',
+        ID: 1,
+        typeID,
+        cmdID
+      })
+    } catch (e) {
+      console.error(e)
+    }
   }
   @Type('Sensor')
   onSensor (data: Protocol.PSensor) {
