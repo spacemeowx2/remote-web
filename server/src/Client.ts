@@ -23,7 +23,11 @@ export class Client extends ProtocolHandler {
   }
   @Type('GetDeviceDetail')
   onGetDeviceDetail ({deviceId}: any) {
-    //
+    let ret = this.app.getDevice(deviceId)
+    return {
+      type: 'DeviceDetail',
+      detail: ret
+    }
   }
   @Type('SubscribeAll')
   onSubscribeAll ({items}: SubscribeAllPackage) {
@@ -33,12 +37,17 @@ export class Client extends ProtocolHandler {
   }
   @Type('Subscribe')
   onSubscribe ({id, args, name}: SubscribePackage) {
-    let aid = this.app.getDataSource(name).subscribe(...args, (data: any) => {
-      this.send({
-        type: 'Data',
-        id: id,
-        value: data
-      })
+    const dataSource = this.app.getDataSource(name)
+    let aid = dataSource.subscribe(...args, (data: any) => {
+      try {
+        this.send({
+          type: 'Data',
+          id: id,
+          value: data
+        })
+      } catch (e) {
+        this.reset()
+      }
     })
     this.idMap.set(id, {
       id: aid,

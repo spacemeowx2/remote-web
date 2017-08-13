@@ -95,4 +95,7 @@ export class ProtocolHandler {
   protected send (data: any) {
     this.ws.send(JSON.stringify(data))
   }
+  protected reset () {
+    this.ws.close()
+  }
 }

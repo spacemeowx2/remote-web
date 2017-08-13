@@ -7,12 +7,14 @@
     md-button.md-icon-button(@click='openDialog')
       md-icon settings
   .main-content
-    md-tabs
+    md-tabs(@change='onTabChange')
       md-tab(v-for='i in deviceList', :key='i.id', :md-label='i.name')
         device(
           @command='doCommand',
-          :sensorTypes='devices[i.id].sensorTypes',
-          :supportCommand='devices[i.id].supportCommand'
+          :ready='!!devices[i.id]'
+          :sensorTypes='devices[i.id] && devices[i.id].sensorTypes',
+          :supportCommand='devices[i.id] && devices[i.id].supportCommand'
+          :sensorValues='sensors[i.id]'
         )
   md-dialog-prompt(
     v-if='promptShow'
@@ -46,7 +48,7 @@ export default {
         name: '家'
       }],
       devices: {
-        testDevice: {
+        test2: {
           sensorTypes: [{
             typeID: 1,
             typeName: '温度',
@@ -79,14 +81,18 @@ export default {
           }]
         }
       },
+      sensors: {},
       activeDeviceId: null,
       now: getTime(),
       nowInterval: null,
-      subscriptor: null
+      subscriptor: null,
+      lastDeviceSID: null,
+      lastSensorSID: null
     }
   },
   created () {
     this.subscriptor = new Subscriptor(this.wsServer)
+    this.subscriptor.onPublish = (data, name, args) => this.onPublish(data, name, args)
     this.subscriptor.subscribe('DeviceList', data => {
       this.deviceList = data.data
     })
@@ -109,6 +115,48 @@ export default {
       this.promptShow = false
       setTimeout(() => { this.promptShow = true }, 1) // fucking workround, to reset value in textbox
       console.log('onClose', type)
+    },
+    onPublish (data, name, args) {
+      // console.log('package', data, name, args)
+      switch (name) {
+        case 'DeviceDetail': {
+          const detail = data.data
+          if (detail) {
+            this.devices[args[0]] = detail
+          }
+          break
+        }
+        case 'Sensor': {
+          const sensor = data.children
+          if (sensor) {
+            for (let key of Object.keys(sensor)) {
+              sensor[key] = sensor[key].data
+            }
+            this.$set(this.sensors, args[0], sensor)
+            // this.sensors[args[0]] = sensor
+          }
+        }
+      }
+    },
+    switchDeviceDetail (deviceID) {
+      if (this.lastDeviceSID) {
+        this.subscriptor.unsubscribe(this.lastDeviceSID)
+        this.lastDeviceSID = null
+      }
+      this.lastDeviceSID = this.subscriptor.subscribe('DeviceDetail', deviceID, null)
+    },
+    switchSensor (deviceID) {
+      if (this.lastSensorSID) {
+        this.subscriptor.unsubscribe(this.lastSensorSID)
+        this.lastSensorSID = null
+      }
+      this.lastSensorSID = this.subscriptor.subscribe('Sensor', deviceID, null)
+    },
+    onTabChange (index) {
+      const item = this.deviceList[index]
+      this.switchDeviceDetail(item.id)
+      this.switchSensor(item.id)
+      console.log('onTabChange', item.id)
     }
   }
 }
