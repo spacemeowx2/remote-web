@@ -3,6 +3,7 @@ import * as Koa from 'koa'
 import * as Route from 'koa-router'
 import * as websockify from 'koa-websocket'
 import * as koaStatic from 'koa-static'
+import * as conditional from 'koa-conditional-get'
 import * as path from 'path'
 import { Device } from './Device'
 import { IDevice } from './IDevice'
@@ -58,6 +59,7 @@ export class App {
     this.devices.push(new TestDevice(this, 'test'))
 
     this.initRouter()
+    this.app.use(conditional())
     this.app.use(koaStatic(path.resolve('../web/dist/')))
     this.app.listen(3000)
     logger.log('Server start listening on port 3000')
